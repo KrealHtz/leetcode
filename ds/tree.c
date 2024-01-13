@@ -1,3 +1,4 @@
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -16,44 +17,100 @@ struct TreeNode* createNode(int val) {
     newNode->right = NULL;
     return newNode;
 }
-// 前序遍历
-void preorderTraversal(struct TreeNode* root) {
+
+// Non-recursive inorder traversal
+void inorderTraversalNonRecursive(struct TreeNode* root) {
     if (root == NULL) {
         return;
     }
-    printf("%d ", root->val); // 先访问根节点
-    preorderTraversal(root->left); // 再遍历左子树
-    preorderTraversal(root->right); // 最后遍历右子树
+    
+    struct TreeNode* stack[100]; // Stack to store nodes
+    int top = -1; // Top of the stack
+    
+    struct TreeNode* current = root;
+    
+    while (current != NULL || top != -1) {
+        // Traverse to the leftmost node
+        while (current != NULL) {
+            stack[++top] = current;
+            current = current->left;
+        }
+        
+        // Pop the top node from the stack
+        current = stack[top--];
+        
+        // Process the current node
+        printf("%d ", current->val);
+        
+        // Traverse to the right subtree
+        current = current->right;
+    }
 }
 
-// 中序遍历
-void inorderTraversal(struct TreeNode* root) {
+// Non-recursive preorder traversal
+void preorderTraversalNonRecursive(struct TreeNode* root) {
     if (root == NULL) {
         return;
     }
-    inorderTraversal(root->left); // 先遍历左子树
-    printf("%d ", root->val); // 再访问根节点
-    inorderTraversal(root->right); // 最后遍历右子树
+    
+    struct TreeNode* stack[100]; // Stack to store nodes
+    int top = -1; // Top of the stack
+    
+    struct TreeNode* current = root;
+    
+    while (current != NULL || top != -1) {
+        // Process the current node
+        printf("%d ", current->val);
+        
+        // Push the right child to the stack
+        if (current->right != NULL) {
+            stack[++top] = current->right;
+        }
+        
+        // Traverse to the left subtree
+        current = current->left;
+        
+        // If left subtree is NULL, pop the top node from the stack
+        if (current == NULL && top != -1) {
+            current = stack[top--];
+        }
+    }
 }
 
-// 后序遍历
-void postorderTraversal(struct TreeNode* root) {
+// Non-recursive postorder traversal
+void postorderTraversalNonRecursive(struct TreeNode* root) {
     if (root == NULL) {
         return;
     }
-    postorderTraversal(root->left); // 先遍历左子树
-    postorderTraversal(root->right); // 再遍历右子树
-    printf("%d ", root->val); // 最后访问根节点
-}
-
-
-int maxDepth(struct TreeNode* root) {
-    if (root == NULL) {
-        return 0;
+    
+    struct TreeNode* stack[100]; // Stack to store nodes
+    int top = -1; // Top of the stack
+    
+    struct TreeNode* current = root;
+    struct TreeNode* lastVisited = NULL; // Last visited node
+    
+    while (current != NULL || top != -1) {
+        // Traverse to the leftmost node
+        while (current != NULL) {
+            stack[++top] = current;
+            current = current->left;
+        }
+        
+        // Peek the top node from the stack
+        struct TreeNode* peekNode = stack[top];
+        
+        // If the right subtree is NULL or already visited, process the current node
+        if (peekNode->right == NULL || peekNode->right == lastVisited) {
+            // Process the current node
+            printf("%d ", peekNode->val);
+            
+            // Pop the top node from the stack
+            lastVisited = stack[top--];
+        } else {
+            // Traverse to the right subtree
+            current = peekNode->right;
+        }
     }
-    int leftDepth = maxDepth(root->left);
-    int rightDepth = maxDepth(root->right);
-    return (leftDepth > rightDepth) ? (leftDepth + 1) : (rightDepth + 1);
 }
 
 int main() {
@@ -63,18 +120,20 @@ int main() {
     root->right = createNode(3);
     root->left->left = createNode(4);
     root->left->right = createNode(5);
-    postorderTraversal(root);
+    
+    // Perform non-recursive traversals
+    printf("Inorder Traversal (Non-Recursive): ");
+    inorderTraversalNonRecursive(root);
     printf("\n");
-    inorderTraversal(root);
+    
+    printf("Preorder Traversal (Non-Recursive): ");
+    preorderTraversalNonRecursive(root);
     printf("\n");
-    preorderTraversal(root);
+    
+    printf("Postorder Traversal (Non-Recursive): ");
+    postorderTraversalNonRecursive(root);
     printf("\n");
-    // Print the values of the binary tree
-    printf("Binary Tree: %d\n", root->val);
-    printf("Left Child: %d\n", root->left->val);
-    printf("Right Child: %d\n", root->right->val);
-    printf("Left Child of Left Child: %d\n", root->left->left->val);
-    printf("Right Child of Left Child: %d\n", root->left->right->val);
-
+    
     return 0;
 }
+

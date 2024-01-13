@@ -46,6 +46,16 @@ void postorderTraversal(struct TreeNode* root) {
     printf("%d ", root->val); // 最后访问根节点
 }
 
+
+int maxDepth(struct TreeNode* root) {
+    if (root == NULL) {
+        return 0;
+    }
+    int leftDepth = maxDepth(root->left);
+    int rightDepth = maxDepth(root->right);
+    return (leftDepth > rightDepth) ? (leftDepth + 1) : (rightDepth + 1);
+}
+
 int main() {
     // Create a sample binary tree
     struct TreeNode* root = createNode(1);
